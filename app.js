@@ -68,12 +68,18 @@ app.get('/purchase/:userId/:productId', async function (req, res, next) {
 });
 
 app.get('/cancel/:email', async function (req, res, next) {
-  const customer = await stripe.customers.search({
+  const customers = await stripe.customers.search({
     query: `email: "${decodeURI(req.params.email)}"`,
   });
-  await stripe.customers.del(
-    customer.data.id
-  );
+
+  for(let i = 0; i < customers.data.length; i++) {
+    const customer = customers.data[i]
+
+    await stripe.customers.del(
+      customer.id
+    );
+  }
+
   res.status(200).json();
 });
 
