@@ -10,12 +10,14 @@ const RC_API_KEY = process.env.RC_API_KEY;
 
 const SUCCESS_URL = process.env.SUCCESS_URL;
 const CANCEL_URL = process.env.CANCEL_URL;
+const corsOrigins = process.env.CORS_ORIGINS;
 // -------------------
 
 
 
 // --- Imports
 const express = require('express');
+const cors = require('cors')
 const createError = require('http-errors');
 const path = require('path');
 // -------------------
@@ -34,6 +36,11 @@ const stripe = Stripe(STRIPE_SECRET)
 
 // --- Express app setup
 const app = express();
+
+const corsOptions = {
+  origin: corsOrigins.split(',')
+}
+app.use(cors(corsOptions))
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
