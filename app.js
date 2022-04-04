@@ -2,6 +2,7 @@
 const PORT = process.env.PORT;
 const TEST_MODE = process.env.TEST_MODE == 'true';
 
+const STRIPE_SECRET = process.env.STRIPE_SECRET;
 const STRIPE_KEY = process.env.STRIPE_KEY;
 const STRIPE_KEY_TEST = process.env.STRIPE_KEY_TEST;
 
@@ -28,7 +29,8 @@ const axios = require('axios').create({
 });
 // -------------------
 
-
+const Stripe = require('stripe')
+const stripe = Stripe(STRIPE_SECRET)
 
 // --- Express app setup
 const app = express();
@@ -62,6 +64,11 @@ app.get('/purchase/:userId/:productId', async function (req, res, next) {
     product_id: req.params.productId
   });
 
+});
+
+app.get('/cancel/:subscriptionId', async function (req, res, next) {
+  stripe.subscriptions.del(req.params.subscriptionId);
+  res.status(200).json();
 });
 
 app.post('/webhooks/stripe', async function (req, res, next) {
