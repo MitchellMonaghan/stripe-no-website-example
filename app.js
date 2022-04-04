@@ -69,7 +69,7 @@ app.get('/purchase/:userId/:productId', async function (req, res, next) {
 
 app.get('/cancel/:email', async function (req, res, next) {
   const customer = await stripe.customers.search({
-    query: `email: ${decodeURI(req.params.email)}`,
+    query: `email: "${decodeURI(req.params.email)}"`,
   });
   await stripe.customers.del(
     customer.data.id
