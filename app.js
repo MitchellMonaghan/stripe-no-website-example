@@ -58,6 +58,7 @@ app.get('/purchase/:userId/:productId', async function (req, res, next) {
   // - Render our redirection page with context
   res.render('redirectToCheckout', {
     user_id: req.params.userId,
+    email: req.query.email,
     key: (TEST_MODE == true ? STRIPE_KEY_TEST : STRIPE_KEY),
     success_url: SUCCESS_URL,
     cancel_url: CANCEL_URL,
@@ -66,8 +67,13 @@ app.get('/purchase/:userId/:productId', async function (req, res, next) {
 
 });
 
-app.get('/cancel/:subscriptionId', async function (req, res, next) {
-  stripe.subscriptions.del(req.params.subscriptionId);
+app.get('/cancel/:email', async function (req, res, next) {
+  const customer = await stripe.customers.search({
+    query: `email: ${decodeURI(req.params.email)}`,
+  });
+  await stripe.customers.del(
+    customer.data.id
+  );
   res.status(200).json();
 });
 
